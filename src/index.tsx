@@ -1,16 +1,16 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
+import './index.css';
+import { LanguageContextProvider } from './Language Provider';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
+  <LanguageContextProvider>
     <App />
-  </React.StrictMode>
+  </LanguageContextProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

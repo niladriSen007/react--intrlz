@@ -1,38 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLanguageContext } from './Language Provider';
 
-const fetchTranslations = async (lang: string) => {
-  try {
-    const response = await axios.get(`https://bucket-for-i18.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/${lang}.json`);
-    console.log(response?.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching translations:', error);
-    return {};
-  }
-};
+
 
 const App: React.FC = () => {
-  const { i18n, t } = useTranslation();
-  const { changeLanguage } = i18n;
-  const [loading, setLoading] = useState(true);
+  const { i18n } = useTranslation();
+
+
+  const { language, setLanguage, loading, pageData, fetchTranslations } = useLanguageContext();
+
+
+
 
   useEffect(() => {
-    const loadTranslations = async () => {
-      const lang = i18n.language || 'en';
-      const translations = await fetchTranslations(lang);
-      console.log(translations,"translations")
-     /*  i18n.addResourceBundle(lang, 'translation', translations); */
-      setLoading(false);
-    };
+    fetchTranslations(language);
+  }, []);
 
-    loadTranslations();
-  }, [i18n]);
-
-  const changelanguage = (lang: string) => {
-    console.log(lang,"selected language")
-    changeLanguage(lang);
+  const changelanguage = async (e: ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value, "selected language")
+    i18n.changeLanguage(e.target.value);
+    setLanguage(e.target.value);
+    fetchTranslations(e.target.value);
   };
 
   if (loading) {
@@ -41,10 +31,13 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>{t('welcome')}</h1>
-      <select onChange={(e) => changelanguage(e.target.value)} defaultValue={i18n.language}>
+      <h1>{pageData['welcome']}</h1>
+      <select onChange={changelanguage} defaultValue={i18n.language}>
         <option value="en">English</option>
         <option value="hi">Hindi</option>
+        <option value="bn">Bengali</option>
+        <option value="fr">French</option>
+        <option value="ir">Irish</option>
       </select>
     </div>
   );
